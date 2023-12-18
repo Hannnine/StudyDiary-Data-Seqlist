@@ -3,11 +3,16 @@ int main() {
 	Head* list = creatListHead(10);
 	
 	for (int i = 0; i < 3; i++) {
-		append(list, 3);
+		insert(list, 0, i+1);
 	}
 
+	insert(list, 2, 500);
 	ShowList(list);
-	
+
+	remove(list, 500);
+	ShowList(list);
+
+
 	releaseListHead(list);
 	return 0;
 }

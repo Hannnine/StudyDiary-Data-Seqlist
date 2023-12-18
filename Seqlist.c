@@ -30,35 +30,89 @@ void releaseListHead(Head* head) {
 		free(head);
 	}
 }
+/*扩容接口*/
+static int EnlargeCapacity(Head* head) {
+	//1.开辟备份空间
+	Element* tmp = malloc(sizeof(Element) * head->capacity * 2);
+	if (tmp == NULL) {
+		fprintf(stderr, "malloc tmp error!\n");
+		return -1;
+	}
+	//2.备份
+	for (int i = 0; i < head->len; i++) {
+		tmp[i] = head->data[i];
+	}
+	free(head->data);
+	//3.重做data
+	head->data = tmp;
+	head->capacity *= 2;
+	return 0;
+}
 
 /*数据操作行为*/
 //1.插入行为(尾插法）
-void append(Head* list, Element val) {
+void append(Head* head, Element val) {
 	//判断溢出
-	if (list->len >= list->capacity) {
-		//1.申请一块原空间二倍空间
-		Element *tmp = malloc(sizeof(Element) * list->capacity * 2);
-		if (tmp == NULL) {
-			fprintf(stderr, "malloc enlarger failed!\n");
-			return -1;
-		}
-		//2.原空间拷贝新空间
-		for (int i = 0; i < list->len; i++){
-			tmp[i] = list->data[i];
-		}
-		free(list->data);
-		//3.更新指针空间
-		list->capacity *= 2;
-		list->data = tmp;
+	if (head->len >= head->capacity) {
+		EnlargeCapacity(head);
 	}
-	list->data[list->len] = val;
-	list->len++;
+	head->data[head->len] = val;
+	head->len++;
+}
+
+//2.任意位置插入
+int insert(Head* head, int pos, Element val) {
+	//1.范围校验
+	if (pos < 0 || pos > head->len) {
+		printf("pos invalid!\n");
+		return -1;
+	}
+	//2.扩容
+	if (head->len >= head->capacity && EnlargeCapacity(head)) {
+		return -1; 
+	}
+	//3.从后往前遍历拷贝元素
+	for (int i = head->len - 1; i >= pos; i--) {
+		head->data[i + 1] = head->data[i];
+	}
+	//4.放入新元素
+	head->data[pos] = val;
+	head->len++;
 }
 
 //3.显示线性表
-void ShowList(const Head* list) {
-	for (int i = 0; i < list->len; i++) {
-		printf("%d\t", list->data[i]);
+void ShowList(const Head* head) {
+	printf("[");
+	for (int i = 0; i < head->len; i++) {
+		printf("%d", head->data[i]);
+		if (i != head->len - 1)
+			printf(",");
 	}
+	printf("]");
 	printf("\n");
+}
+
+//4.删除
+int remove(Head* head, Element val) {
+	int pos = find(head, val);
+	if (pos < 0) {
+		printf("No find!\n");
+		return -1;
+	}
+	for (int i = pos; i < head->len; i++) {
+		head->data[i] = head->data[i + 1];
+	}
+	head->len--;
+	return 0;
+}
+
+//5.查找
+int find(Head *head, int val) {
+	//遍历
+	for (int i = 0; i < head->len; i++) {
+		if (head->data[i] == val) {
+			return i;
+		}
+	}
+	return -1;
 }

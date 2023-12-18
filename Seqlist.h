@@ -2,8 +2,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-typedef struct  Head;
-
 /*顺序表表头*/
 typedef int Element;
 typedef struct {
@@ -20,7 +18,10 @@ void releaseListHead(Head* listhead);	//释放表
 //1.插入行为(尾插法）
 void append(Head* head, Element val);
 //2.任意位置插入
-int insert(Head* head, int n);
-
+int insert(Head* head, int pos, Element val);
 //3.显示线性表
 void ShowList(const Head* list);
+//4.删除
+int remove(Head* head, int pos);
+//5.查找
+int find(Head* head, int val);
